@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.core.database import database, init_db
 from src.features.ivr.router import router as ivr_router
 from src.features.dashboard.router import router as dashboard_router
+from src.features.media_stream.router import router as media_stream_router
 
 app = FastAPI(title="RojinMatch API")
 
@@ -27,6 +28,7 @@ async def shutdown():
 
 app.include_router(ivr_router, prefix="/api/ivr", tags=["IVR"])
 app.include_router(dashboard_router, tags=["Dashboard"])
+app.include_router(media_stream_router, tags=["Media Stream"])
 
 @app.get("/")
 def read_root():
