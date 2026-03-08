@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+websockets
+databases
+aiosqlite
+pydantic-settings
+requests
+python-multipart
