@@ -42,15 +42,15 @@ Senior calls → Twilio IVR → FastAPI webhook
 
 ## Stack
 
-| Piece | Tech | Why |
-|---|---|---|
-| Telephony | Twilio (IVR + Conference + Media Streams) | PSTN-native, no app needed |
-| Backend | FastAPI (Python) | Fast to write, async WebSocket support |
-| ASR | Deepgram streaming | ~300 ms latency, word-level results |
-| DB | SQLite | Zero setup for a hackathon |
-| Queue | Python dict in memory | Simple enough for demo scale |
-| Dashboard | Single HTML file + vanilla JS | No build step |
-| Tunnel | ngrok | Expose localhost to Twilio webhooks |
+| Piece     | Tech                                      | Why                                    |
+| --------- | ----------------------------------------- | -------------------------------------- |
+| Telephony | Twilio (IVR + Conference + Media Streams) | PSTN-native, no app needed             |
+| Backend   | FastAPI (Python)                          | Fast to write, async WebSocket support |
+| ASR       | Deepgram streaming                        | ~300 ms latency, word-level results    |
+| DB        | SQLite                                    | Zero setup for a hackathon             |
+| Queue     | Python dict in memory                     | Simple enough for demo scale           |
+| Dashboard | Single HTML file + vanilla JS             | No build step                          |
+| Tunnel    | ngrok                                     | Expose localhost to Twilio webhooks    |
 
 ---
 
@@ -66,27 +66,49 @@ Senior calls → Twilio IVR → FastAPI webhook
 
 ## API (5 endpoints)
 
-| Method | Path | Description |
-|---|---|---|
-| `POST` | `/webhooks/inbound` | Twilio calls this on new inbound call; returns TwiML |
-| `POST` | `/webhooks/status` | Twilio call status updates |
-| `POST` | `/webhooks/stream` | Deepgram transcript segments → keyword scan → WebSocket push |
-| `GET` | `/sessions` | List active sessions (dashboard polling fallback) |
-| `WS` | `/ws/dashboard` | Push transcript segments and alerts to caretaker UI |
+| Method | Path                | Description                                                  |
+| ------ | ------------------- | ------------------------------------------------------------ |
+| `POST` | `/webhooks/inbound` | Twilio calls this on new inbound call; returns TwiML         |
+| `POST` | `/webhooks/status`  | Twilio call status updates                                   |
+| `POST` | `/webhooks/stream`  | Deepgram transcript segments → keyword scan → WebSocket push |
+| `GET`  | `/sessions`         | List active sessions (dashboard polling fallback)            |
+| `WS`   | `/ws/dashboard`     | Push transcript segments and alerts to caretaker UI          |
+
+---
+
+## Setup and Running the Backend
+
+1. Navigate to the `backend` directory:
+   ```bash
+   cd backend
+   ```
+2. Create and activate a Python virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. Run the development server:
+   ```bash
+   uvicorn src.main:app --reload
+   ```
 
 ---
 
 ## Build Order (4 hours)
 
-| Time | Task |
-|---|---|
-| 0:00–0:30 | Twilio account setup, buy number, ngrok tunnel, FastAPI skeleton |
-| 0:30–1:15 | `/webhooks/inbound` TwiML + in-memory queue + Conference bridge |
-| 1:15–2:00 | Twilio Media Stream → Deepgram WebSocket → transcript storage |
-| 2:00–2:30 | Keyword scan + WebSocket push to dashboard |
+| Time      | Task                                                                   |
+| --------- | ---------------------------------------------------------------------- |
+| 0:00–0:30 | Twilio account setup, buy number, ngrok tunnel, FastAPI skeleton       |
+| 0:30–1:15 | `/webhooks/inbound` TwiML + in-memory queue + Conference bridge        |
+| 1:15–2:00 | Twilio Media Stream → Deepgram WebSocket → transcript storage          |
+| 2:00–2:30 | Keyword scan + WebSocket push to dashboard                             |
 | 2:30–3:15 | Caretaker dashboard HTML: live transcript list, alerts highlighted red |
-| 3:15–3:45 | Seed 2–3 test seniors in SQLite, end-to-end demo call |
-| 3:45–4:00 | Polish, record demo video |
+| 3:15–3:45 | Seed 2–3 test seniors in SQLite, end-to-end demo call                  |
+| 3:45–4:00 | Polish, record demo video                                              |
 
 ---
 
