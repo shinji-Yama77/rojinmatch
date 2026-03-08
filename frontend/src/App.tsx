@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import './App.css'
+import { useState, useEffect, useRef } from "react";
+import "./App.css";
 
 interface Transcript {
   speaker: string;
@@ -17,51 +17,57 @@ interface Alert {
 }
 
 function App() {
-  const [queueCount, setQueueCount] = useState(0)
-  const [transcripts, setTranscripts] = useState<Transcript[]>([])
-  const [alerts, setAlerts] = useState<Alert[]>([])
-  const [connectionStatus, setConnectionStatus] = useState('Disconnected')
-  const [activeConference, setActiveConference] = useState<string | null>(null)
-  const ws = useRef<WebSocket | null>(null)
+  const [queueCount, setQueueCount] = useState(0);
+  const [transcripts, setTranscripts] = useState<Transcript[]>([]);
+  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [connectionStatus, setConnectionStatus] = useState("Disconnected");
+  const [activeConference, setActiveConference] = useState<string | null>(null);
+  const ws = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     // Connect to WebSocket
-    ws.current = new WebSocket('ws://localhost:8001/ws/dashboard')
+    ws.current = new WebSocket("ws://localhost:8000/ws/dashboard");
 
     ws.current.onopen = () => {
-      setConnectionStatus('Connected')
-      console.log('Connected to WebSocket')
-    }
+      setConnectionStatus("Connected");
+      console.log("Connected to WebSocket");
+    };
 
     ws.current.onclose = () => {
-      setConnectionStatus('Disconnected')
-      console.log('Disconnected from WebSocket')
-    }
+      setConnectionStatus("Disconnected");
+      console.log("Disconnected from WebSocket");
+    };
 
     ws.current.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-      console.log('Received:', data)
+      const data = JSON.parse(event.data);
+      console.log("Received:", data);
 
-      if (data.event === 'queue_update') {
-        setQueueCount(data.count)
-      } else if (data.event === 'match_found') {
+      if (data.event === "queue_update") {
+        setQueueCount(data.count);
+      } else if (data.event === "match_found") {
         // Optional: show notification
-      } else if (data.event === 'conference_started') {
-        setActiveConference(data.conference_sid)
+      } else if (data.event === "conference_started") {
+        setActiveConference(data.conference_sid);
         // Clear previous transcripts for new conference
-        setTranscripts([])
-        setAlerts([])
-      } else if (data.event === 'transcript') {
-        setTranscripts(prev => [...prev, { ...data, timestamp: new Date().toLocaleTimeString() }])
-      } else if (data.event === 'alert') {
-        setAlerts(prev => [...prev, { ...data, timestamp: new Date().toLocaleTimeString() }])
+        setTranscripts([]);
+        setAlerts([]);
+      } else if (data.event === "transcript") {
+        setTranscripts((prev) => [
+          ...prev,
+          { ...data, timestamp: new Date().toLocaleTimeString() },
+        ]);
+      } else if (data.event === "alert") {
+        setAlerts((prev) => [
+          ...prev,
+          { ...data, timestamp: new Date().toLocaleTimeString() },
+        ]);
       }
-    }
+    };
 
     return () => {
-      ws.current?.close()
-    }
-  }, [])
+      ws.current?.close();
+    };
+  }, []);
 
   return (
     <div className="container">
@@ -80,7 +86,7 @@ function App() {
           </div>
           <div className="card">
             <h2>Active Conference</h2>
-            <div className="conference-id">{activeConference || 'None'}</div>
+            <div className="conference-id">{activeConference || "None"}</div>
           </div>
         </div>
 
@@ -88,9 +94,14 @@ function App() {
           <div className="transcripts-panel">
             <h2>Live Transcripts</h2>
             <div className="scroll-area">
-              {transcripts.length === 0 && <p className="placeholder">Waiting for conversation...</p>}
+              {transcripts.length === 0 && (
+                <p className="placeholder">Waiting for conversation...</p>
+              )}
               {transcripts.map((t, i) => (
-                <div key={i} className={`transcript-item ${t.is_unsafe ? 'unsafe' : ''}`}>
+                <div
+                  key={i}
+                  className={`transcript-item ${t.is_unsafe ? "unsafe" : ""}`}
+                >
                   <span className="timestamp">{t.timestamp}</span>
                   <span className="speaker">{t.speaker}:</span>
                   <span className="text">{t.text}</span>
@@ -102,7 +113,9 @@ function App() {
           <div className="alerts-panel">
             <h2>Safety Alerts</h2>
             <div className="scroll-area">
-              {alerts.length === 0 && <p className="placeholder">No active alerts.</p>}
+              {alerts.length === 0 && (
+                <p className="placeholder">No active alerts.</p>
+              )}
               {alerts.map((a, i) => (
                 <div key={i} className="alert-item">
                   <div className="alert-header">
@@ -117,7 +130,7 @@ function App() {
         </div>
       </main>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

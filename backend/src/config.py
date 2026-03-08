@@ -11,11 +11,11 @@ class Settings(BaseSettings):
     TWILIO_API_KEY_SID: str = ""
     TWILIO_API_KEY_SECRET: str = ""
     
-    # Mock settings
-    MOCK_TWILIO: bool = False
-    MOCK_DEEPGRAM: bool = True
+    DEEPGRAM_API_KEY: str = ""
+    SERVER_URL: str = "http://localhost:8000"
 
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
