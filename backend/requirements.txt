@@ -6,3 +6,4 @@ aiosqlite
 pydantic-settings
 requests
 python-multipart
+twilio

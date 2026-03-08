@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, BackgroundTasks
+from fastapi import APIRouter, Request, Form, BackgroundTasks, Response
 from src.features.matchmaking.service import match_queue
 from src.core.database import database, callers
 from src.services.twilio import twilio_service
@@ -27,8 +27,8 @@ async def handle_incoming_call(From: str = Form(...), CallSid: str = Form(...)):
         print(f"Existing caller found: {caller.name}")
 
     # 2. Add to Matchmaking Queue (Background Task to not block Twilio response)
-    # In a real app, this might be handled via task queue (Celery/RQ)
-    asyncio.create_task(match_queue.add_caller(caller_id, From))
+    asyncio.create_task(match_queue.add_caller(caller_id, From, CallSid))
 
-    # 3. Return TwiML
-    return twilio_service.play_message("Welcome to RojinMatch. Please wait while we connect you to a partner.")
+    # 3. Return TwiML (Wait/Enqueue)
+    twiml_response = twilio_service.incoming_call_response()
+    return Response(content=twiml_response, media_type="application/xml")

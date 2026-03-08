@@ -1,4 +1,7 @@
 # Logs
+# Generated APIs
+/openapi.json
+/src/api/
 logs
 *.log
 npm-debug.log*
