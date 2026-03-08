@@ -6,3 +6,4 @@ commons/
 __pycache__/
 *.db
 .DS_Store
+*.log
